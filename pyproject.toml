@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bloxscope"
+version = "0.1.0"
+description = "Local search of directly collected public Roblox resources"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+license-files = ["LICENSE", "licenses/*.txt"]
+
+[project.optional-dependencies]
+analysis = ["capstone==5.0.9"]
+
+[project.scripts]
+bloxscope = "bloxscope.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["bloxscope*"]

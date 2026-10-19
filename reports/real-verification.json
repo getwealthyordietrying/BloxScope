@@ -1,0 +1,276 @@
+{
+  "verified_at": "2026-10-19T04:27:07.320085+00:00",
+  "origin": "direct-official-roblox",
+  "fixture_data": false,
+  "analysis_version": "strings-1-container-2-pe-1",
+  "generation": "7df59b62fcbb3ec944acfddf5697979f38a38368c243b67b88ca9536c888c283",
+  "builds": [
+    {
+      "product": "Player",
+      "build": "version-11f155f3450f4c8e"
+    },
+    {
+      "product": "Studio",
+      "build": "version-4f087c32742644ab"
+    }
+  ],
+  "occurrences": 6894397,
+  "files": 7756,
+  "scripts": 79080,
+  "coverage_counts": [
+    {
+      "type": "executable string",
+      "count": 2817821
+    },
+    {
+      "type": "readable script Source",
+      "count": 21320
+    },
+    {
+      "type": "readable script file",
+      "count": 1067043
+    },
+    {
+      "type": "readable text resource",
+      "count": 20862
+    },
+    {
+      "type": "script instance name",
+      "count": 79080
+    },
+    {
+      "type": "script string-table entry",
+      "count": 2888271
+    }
+  ],
+  "partial_or_unsupported_files": [
+    {
+      "product": "Player",
+      "path": "content-models.zip/Thumbnails/Mannequins/R6.rbxmx",
+      "coverage_json": "{\"status\": \"unsupported\", \"error\": \"Unknown model/container encoding; original bytes retained. No arbitrary headers removed.\"}"
+    },
+    {
+      "product": "Studio",
+      "path": "content-models.zip/Thumbnails/Mannequins/R6.rbxmx",
+      "coverage_json": "{\"status\": \"unsupported\", \"error\": \"Unknown model/container encoding; original bytes retained. No arbitrary headers removed.\"}"
+    },
+    {
+      "product": "Studio",
+      "path": "extracontent-scripts.zip/CoreScripts/Modules/Server/ClientChat/CurveUtil.lua",
+      "coverage_json": "{\"status\": \"unsupported\", \"error\": \"Unsupported control bytes in text\"}"
+    },
+    {
+      "product": "Studio",
+      "path": "extracontent-models.zip/ServerCoreScripts.rbxm",
+      "coverage_json": "{\"status\": \"partial\", \"scope\": \"Experimental flat script metadata. Bytecode strings are literals/names, NOT reconstructed code or proof of behavior. No instruction decoding/decompilation.\", \"query\": null, \"script_count\": 101, \"declared_script_count\": 101, \"uninspected_script_count\": 0, \"opaque_count\": 1, \"kinds\": {\"readable-source-property\": 100, \"opaque-source-property\": 1}, \"matched_scripts\": 0, \"identity_errors\": [], \"errors\": []}"
+    }
+  ],
+  "queries": {
+    "gift": {
+      "matching_extracted_occurrences": 757,
+      "seconds": 3.193,
+      "page_size": 15
+    },
+    "GiftAllowanceView": {
+      "matching_extracted_occurrences": 4,
+      "seconds": 8.688,
+      "page_size": 4
+    },
+    "GiftEligibility": {
+      "matching_extracted_occurrences": 4,
+      "seconds": 9.6,
+      "page_size": 4
+    },
+    "100%_[]": {
+      "matching_extracted_occurrences": 0,
+      "seconds": 10.283,
+      "page_size": 0
+    },
+    "caf\u00e9": {
+      "matching_extracted_occurrences": 0,
+      "seconds": 10.306,
+      "page_size": 0
+    },
+    "123": {
+      "matching_extracted_occurrences": 3077,
+      "seconds": 5.389,
+      "page_size": 15
+    }
+  },
+  "offset_verified_samples": [
+    {
+      "text": "rundll32.exe",
+      "type": "executable string",
+      "file": "RobloxApp.zip/RobloxPlayerBeta.exe",
+      "file_sha256": "a9641e548298e9582f20c1007d7f4d684b57eb36a884376eb8481d1c62af32f7",
+      "build": "version-11f155f3450f4c8e",
+      "location": {
+        "file_offset": 105049136,
+        "rva": 105055792,
+        "preferred_va": 5473764912,
+        "section": ".rdata"
+      },
+      "raw_check": {
+        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\a9641e548298e9582f20c1007d7f4d684b57eb36a884376eb8481d1c62af32f7",
+        "file_sha256_verified": true,
+        "exact_string_bytes_verified": true,
+        "hex_start_file_offset": 105049120,
+        "hex_bytes": "41747472696275746500000000000000720075006e0064006c006c00330032002e0065007800650000000000000000004372656174655072",
+        "display_byte_limit": 512
+      },
+      "script_name": null
+    },
+    {
+      "text": "export type Icon = \"3dCubeArrowLeft\" | \"5GSignalFair\" | \"5GSignalGood\" | \"5GSignalPoor\" | \"Amazon\" | \"Android\" | \"Apple\" | \"Arm\" | \"ArmLeft\" | \"ArmRight\" | \"ArrowCurlToLeft\" | \"ArrowCurlToRight\" | \"ArrowCurvedPathLeft\" | \"ArrowCurvedPathRight\" | \"ArrowDownToLine\" | \"ArrowLargeDown\" | \"ArrowLargeLeft",
+      "type": "readable script file",
+      "file": "extracontent-luapackages.zip/Packages/_Index/BuilderIcons/BuilderIcons/Icon.lua",
+      "file_sha256": "16c0ea7ebd1c77b3f11806b0813b83644d4132a419b2d973b75bd93521f13316",
+      "build": "version-4f087c32742644ab",
+      "location": {
+        "line": 1,
+        "file_offset": 0,
+        "coordinate": "file bytes"
+      },
+      "raw_check": {
+        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\16c0ea7ebd1c77b3f11806b0813b83644d4132a419b2d973b75bd93521f13316",
+        "file_sha256_verified": true,
+        "exact_string_bytes_verified": true,
+        "hex_start_file_offset": 0,
+        "hex_bytes": "6578706f727420747970652049636f6e203d20223364437562654172726f774c65667422207c202235475369676e616c4661697222207c202235475369676e616c476f6f6422207c202235475369676e616c506f6f7222207c2022416d617a6f6e22207c2022416e64726f696422207c20224170706c6522207c202241726d22207c202241726d4c65667422207c202241726d526967687422207c20224172726f774375726c546f4c65667422207c20224172726f774375726c546f526967687422207c20224172726f77437572766564506174684c65667422207c20224172726f7743757276656450617468526967687422207c20224172726f77446f776e546f4c696e6522207c20224172726f774c61726765446f776e22207c20224172726f774c617267654c65667422207c20224172726f774c61726765526967687422207c20224172726f774c61726765557022207c20224172726f774d656469756d446f776e22207c20224172726f774d656469756d4c65667422207c20224172726f774d656469756d526967687422207c20224172726f774d656469756d557022207c20224172726f7750726f6772657373557022207c20224172726f77526967687446726f6d506f72747261697452656374616e676c6522207c20224172726f775269676874546f506f72747261697452656374616e676c6522207c202241",
+        "display_byte_limit": 512
+      },
+      "script_name": null
+    },
+    {
+      "text": "CommonUI.Features.Label.GiftCards",
+      "type": "script string-table entry",
+      "file": "extracontent-models.zip/InExperience/InExperience.rbxm",
+      "file_sha256": "23f0ab1c5ffc8d014464279e29262b1835e90925b631194800e569b007965d6f",
+      "build": "version-11f155f3450f4c8e",
+      "location": {
+        "chunk_file_offset": 1452465,
+        "chunk_uncompressed_source_offset": 2075545,
+        "source_file_offset": null,
+        "coordinate": "Source-relative bytes",
+        "string_index": 808,
+        "payload_offset": 66121,
+        "source_offset": 66129,
+        "payload_start_in_source": 8,
+        "chunk_uncompressed_offset": 2141674,
+        "file_offset": null
+      },
+      "raw_check": {
+        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\23f0ab1c5ffc8d014464279e29262b1835e90925b631194800e569b007965d6f",
+        "file_sha256_verified": true,
+        "coordinate": "decompressed property chunk bytes; not file bytes",
+        "chunk_file_offset": 1452465,
+        "codec": "zstandard",
+        "chunk_payload_sha256": "1aa030c6c01afaa8c79f46f7104cb2496e4ab62c4d1c7acc82286086b3867367",
+        "hex_start_chunk_offset": 2141658,
+        "hex_bytes": "20d8a7d984d987d8afd8a7d98ad8a721436f6d6d6f6e55492e46656174757265732e4c6162656c2e47696674436172647312d8a7d984d985d8acd8aad985d8b9d8",
+        "exact_string_bytes_verified": true,
+        "display_byte_limit": 512
+      },
+      "script_name": "ar-001"
+    },
+    {
+      "text": "AvatarExperienceGifting",
+      "type": "script instance name",
+      "file": "extracontent-models.zip/DataModelPatch/DataModelPatch.rbxm",
+      "file_sha256": "d7106a1217a730a0c2d3525f2458e709933be54e273d6d7daa6f1d6bbbfa5fb7",
+      "build": "version-4f087c32742644ab",
+      "location": {
+        "coordinate": "Name property decompressed chunk bytes",
+        "chunk_file_offset": 774704,
+        "chunk_uncompressed_offset": 210248,
+        "file_offset": null,
+        "class_id": 2,
+        "instance_index": 9939
+      },
+      "raw_check": {
+        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\d7106a1217a730a0c2d3525f2458e709933be54e273d6d7daa6f1d6bbbfa5fb7",
+        "file_sha256_verified": true,
+        "coordinate": "decompressed property chunk bytes; not file bytes",
+        "chunk_file_offset": 774704,
+        "codec": "zstandard",
+        "chunk_payload_sha256": "2a26171cb8eb0067cca64c66ba545e144f5f10b5d3610ebfc9a061317bf890f7",
+        "hex_start_chunk_offset": 210232,
+        "hex_bytes": "5369676e616c73526561637417000000417661746172457870657269656e636547696674696e6721000000417661746172457870657269",
+        "exact_string_bytes_verified": true,
+        "display_byte_limit": 512
+      },
+      "script_name": "AvatarExperienceGifting"
+    }
+  ],
+  "real_reference_proof": [
+    {
+      "instruction_va": 5376689183,
+      "runtime_range_begin_rva": 7978000,
+      "runtime_range_end_rva": 7986647,
+      "exact_bytes_and_target_verified": true,
+      "boundary_redecoded_from_range_start": true
+    }
+  ],
+  "capstone_package_version": "5.0.9",
+  "capstone_binding_version": "5.0.7",
+  "capstone_native_version": [
+    5,
+    0,
+    1280
+  ],
+  "selected_package_occurrence_bytes": 320835197,
+  "unique_downloaded_package_bytes": 319297803,
+  "unique_package_count": 13,
+  "manifest_declared_output_bytes": 538874746,
+  "extracted_file_occurrence_bytes": 464798391,
+  "active_index_bytes": 2171133952,
+  "disk_components_bytes": {
+    "packages": 319308649,
+    "blobs": 460050931,
+    "generations": 4327605459,
+    "analysis": 165585301,
+    "observations": 64890,
+    "staging": 0,
+    "exports": 22671
+  },
+  "total_store_bytes": 5272638216,
+  "player_reference_blocker": {
+    "exception_directory_rva": 0,
+    "exception_directory_size": 0,
+    "reason": "No supported x64 runtime-function boundaries. No protected bytes were unpacked or executed."
+  },
+  "script_coverage_counts": [
+    {
+      "product": "Player",
+      "kind": "luau-string-table",
+      "encoding": "observed-prefixed-luau",
+      "count": 38066
+    },
+    {
+      "product": "Player",
+      "kind": "readable-source-property",
+      "encoding": null,
+      "count": 22
+    },
+    {
+      "product": "Studio",
+      "kind": "luau-string-table",
+      "encoding": "raw-luau",
+      "count": 40879
+    },
+    {
+      "product": "Studio",
+      "kind": "opaque-source-property",
+      "encoding": null,
+      "count": 1
+    },
+    {
+      "product": "Studio",
+      "kind": "readable-source-property",
+      "encoding": null,
+      "count": 112
+    }
+  ],
+  "active_generation_bytes": 2172260964,
+  "data_with_only_active_generation_bytes": 3117293721
+}

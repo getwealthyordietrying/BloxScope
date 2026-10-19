@@ -1,0 +1,40 @@
+{
+  "origin": "direct-official-roblox",
+  "fixture_data": false,
+  "product": "Studio",
+  "build": "version-4f087c32742644ab",
+  "file": "RobloxStudio.zip/RobloxStudioBeta.exe",
+  "file_sha256": "cc70176d50d5f2c1edc26d40f1fcdc530748fc83dedc63c2fdbb251f766972d2",
+  "text": "%s RobloxApp/%s (%s; RobloxDirectDownload)",
+  "encoding": "utf-8",
+  "byte_length": 42,
+  "location": {
+    "file_offset": 143242760,
+    "rva": 143249416,
+    "preferred_va": 5511958536,
+    "section": ".rdata"
+  },
+  "coverage": {
+    "analysis_version": "amd64-unwind-linear-1",
+    "backend": "Capstone 5.0.7",
+    "status": "experimental",
+    "range_count": 411984,
+    "decoded_bytes": 133455101,
+    "incomplete_ranges": 2010,
+    "references": 685164,
+    "observed_at": "2026-10-19T04:16:09.650332+00:00",
+    "scope": "AMD64 PE32+ unwind ranges, linear decoded boundaries; RIP-relative LEA/MOV and MOV immediate VA. No reachability claim."
+  },
+  "count": 1,
+  "page": 0,
+  "verified_decoded_references": [
+    {
+      "target": 5511958536,
+      "instruction_va": 5376689183,
+      "file_offset": 7976991,
+      "bytes": "488d15e20b1008",
+      "decoded": "lea rdx, [rip + 0x8100be2]",
+      "why": "Capstone decoded RIP-relative operand at a boundary reached from the x64 unwind range start. Target = next instruction VA + signed displacement."
+    }
+  ]
+}

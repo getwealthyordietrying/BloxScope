@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-10-19T04:26:59.120507+00:00",
+  "origin": "direct-official-roblox",
+  "fixture_data": false,
+  "exit_code": 0,
+  "strict_ascii": true,
+  "seconds": 66.34,
+  "same_build_cache_reused": true,
+  "downloaded_package_bytes_this_run": 0,
+  "search_details_back_pagination_numeric_export": true,
+  "real_decoded_reference_and_pointer_workflow": true,
+  "stdout_sha256": "b264973203530f508cc2fb005793047619b8f8927054391e9dbb8f0b91b25633",
+  "stderr_bytes": 0
+}
