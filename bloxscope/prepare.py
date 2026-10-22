@@ -1,12 +1,14 @@
 """Checkpoint each verified package and each completed file. Promote at the end."""
 import json
 from pathlib import Path
+import zipfile
 
 from . import ANALYSIS_VERSION
 from .common import ScopeError, atomic_json, digest, file_hash, now, process_lock, size
 from .extract import archive_members, extract_file
 from .sources import HTTP, EXECUTABLES, discover, package
 from .store import SCHEMA, active, connect, put_blob
+from .terminal import report
 
 
 def prepare(root, progress=print, http=None):
@@ -49,10 +51,13 @@ def prepare_observations(root, observations, progress, http, attempt):
         progress("Same builds. Checking retained evidence and reusing the completed index...")
         with_db = connect(complete / "index.sqlite3")
         try:
-            for f in with_db.execute("SELECT sha256,bytes FROM files"):
+            total_files = with_db.execute("SELECT count(*) FROM files").fetchone()[0]
+            report(progress, "Verifying retained files", 0, total_files, "files")
+            for number, f in enumerate(with_db.execute("SELECT sha256,bytes FROM files"), 1):
                 path = root / "blobs" / f["sha256"]
                 if not path.exists() or path.stat().st_size != f["bytes"] or file_hash(path) != f["sha256"]:
                     raise ScopeError("Retained original file is missing or damaged: " + f["sha256"])
+                report(progress, "Verifying retained files", number, total_files, "files")
         finally:
             with_db.close()
         for o in observations:
@@ -85,7 +90,20 @@ def prepare_observations(root, observations, progress, http, attempt):
                 atomic_json(stage / (o["product"] + "-" + p["name"] + ".json"), metadata)
                 main = EXECUTABLES[o["product"]][1] if p["name"] == EXECUTABLES[o["product"]][0] else None
                 seen_main, inventory, extracted = False, [], 0
-                for member, raw, declared_size in archive_members(archive, main):
+                try:
+                    with zipfile.ZipFile(archive) as zip_index:
+                        total_members = sum(not member.is_dir() for member in zip_index.infolist())
+                except zipfile.BadZipFile as exc:
+                    raise ScopeError("Cannot read ZIP inventory: " + str(exc)) from exc
+
+                def tracked_members():
+                    stage_label = "Extracting/indexing " + label
+                    report(progress, stage_label, 0, total_members, "members")
+                    for number, entry in enumerate(archive_members(archive, main), 1):
+                        yield entry
+                        report(progress, stage_label, number, total_members, "members")
+
+                for member, raw, declared_size in tracked_members():
                     internal = p["name"] + "/" + member
                     inventory.append({"path": member, "bytes": declared_size, "extracted": raw is not None})
                     if raw is None:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bloxscope"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local search of directly collected public Roblox resources"
 readme = "README.md"
 requires-python = ">=3.14"

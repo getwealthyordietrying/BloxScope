@@ -21,11 +21,15 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def file_hash(path, algorithm="sha256"):
+def file_hash(path, algorithm="sha256", on_bytes=None):
     h = hashlib.new(algorithm)
+    done = 0
     with open(path, "rb") as f:
         for block in iter(lambda: f.read(1024 * 1024), b""):
             h.update(block)
+            done += len(block)
+            if on_bytes:
+                on_bytes(done)
     return h.hexdigest()
 
 
@@ -57,10 +61,12 @@ def safe(value):
     return "".join(out)
 
 
-def say(value=""):
+def say(value="", *, tone=None):
+    from .terminal import decorate, finish_active
+    finish_active()
     text = safe(value)
     encoding = getattr(sys.stdout, "encoding", None) or "ascii"
-    print(text.encode(encoding, "backslashreplace").decode(encoding))
+    print(decorate(text.encode(encoding, "backslashreplace").decode(encoding), tone))
 
 
 def size(value):

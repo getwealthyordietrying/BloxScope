@@ -111,7 +111,7 @@
         "section": ".rdata"
       },
       "raw_check": {
-        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\a9641e548298e9582f20c1007d7f4d684b57eb36a884376eb8481d1c62af32f7",
+        "original_file": "<USER_HOME>\\.codex\\bloxscope-work\\.bloxscope\\blobs\\a9641e548298e9582f20c1007d7f4d684b57eb36a884376eb8481d1c62af32f7",
         "file_sha256_verified": true,
         "exact_string_bytes_verified": true,
         "hex_start_file_offset": 105049120,
@@ -132,7 +132,7 @@
         "coordinate": "file bytes"
       },
       "raw_check": {
-        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\16c0ea7ebd1c77b3f11806b0813b83644d4132a419b2d973b75bd93521f13316",
+        "original_file": "<USER_HOME>\\.codex\\bloxscope-work\\.bloxscope\\blobs\\16c0ea7ebd1c77b3f11806b0813b83644d4132a419b2d973b75bd93521f13316",
         "file_sha256_verified": true,
         "exact_string_bytes_verified": true,
         "hex_start_file_offset": 0,
@@ -160,7 +160,7 @@
         "file_offset": null
       },
       "raw_check": {
-        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\23f0ab1c5ffc8d014464279e29262b1835e90925b631194800e569b007965d6f",
+        "original_file": "<USER_HOME>\\.codex\\bloxscope-work\\.bloxscope\\blobs\\23f0ab1c5ffc8d014464279e29262b1835e90925b631194800e569b007965d6f",
         "file_sha256_verified": true,
         "coordinate": "decompressed property chunk bytes; not file bytes",
         "chunk_file_offset": 1452465,
@@ -188,7 +188,7 @@
         "instance_index": 9939
       },
       "raw_check": {
-        "original_file": "C:\\Users\\hello\\.codex\\bloxscope-work\\.bloxscope\\blobs\\d7106a1217a730a0c2d3525f2458e709933be54e273d6d7daa6f1d6bbbfa5fb7",
+        "original_file": "<USER_HOME>\\.codex\\bloxscope-work\\.bloxscope\\blobs\\d7106a1217a730a0c2d3525f2458e709933be54e273d6d7daa6f1d6bbbfa5fb7",
         "file_sha256_verified": true,
         "coordinate": "decompressed property chunk bytes; not file bytes",
         "chunk_file_offset": 774704,

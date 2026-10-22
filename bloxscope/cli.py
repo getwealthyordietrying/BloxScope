@@ -1,6 +1,7 @@
 """Launch, search, open a number, search again."""
 import argparse
 import json
+import re
 from pathlib import Path
 import sqlite3
 import uuid
@@ -9,8 +10,30 @@ from .common import ScopeError, atomic_json, atomic_bytes, safe, say, size
 from .pe import pointer_page, reference_page
 from .prepare import prepare
 from .store import Search, active
+from .export_txt import desktop_directory, destination_for, preview, publish
+from .terminal import Progress, banner
 
-HELP = "Search any text. Use S <term> for numbers or command words, for example S 123 or S Q. A plain number opens a displayed result. N/P: next/previous page. B: back to Search. H: help. Q: quit. Searches are case-insensitive literal substrings. Each match is one extracted string location; duplicate text stays separate. No relevance cutoff."
+HELP = (
+    "S <text>         Search numbers or command words",
+    "N                Next page",
+    "P                Previous page",
+    "JMP <page>       Go to a page",
+    "B                Back to Search",
+    "H                Show help",
+    "Q                Quit",
+    "--export         Export the result list",
+    "--advexport      Export results with details",
+    "",
+    "Gift --export",
+    "Gift --advexport",
+    "S 123",
+)
+
+
+def show_help():
+    for line in HELP:
+        say(line)
+
 
 
 def default_store():
@@ -18,6 +41,8 @@ def default_store():
 
 
 def prompt(text):
+    from .terminal import finish_active
+    finish_active()
     try:
         return input(text)
     except EOFError:
@@ -102,7 +127,7 @@ def details(search, occurrence):
             elif action == "E":
                 paths = export_detail(search.root, d)
                 for path in paths:
-                    say("Saved: " + str(path.resolve()))
+                    say("Saved: " + str(path.resolve()), tone="success")
             elif action in {"R", "C", "N", "P"}:
                 va = d["location"].get("preferred_va")
                 if d["type"] != "executable string" or va is None:
@@ -135,29 +160,82 @@ def details(search, occurrence):
                         say(json.dumps(item, ensure_ascii=True))
                 say("N/P shows other reference pages. E exports this page with its total count and coverage.")
             else:
-                say("B returns to your results. R checks static executable references. C checks pointer candidates. V shows source URLs, hashes and raw evidence. E saves JSON and Markdown. T shows the full string. N/P pages through R or C. " + HELP)
+                for line in ("B  Back to results", "T  Show full string", "R  Check references", "C  Check pointer candidates", "V  Show raw evidence", "E  Export JSON and Markdown", "N/P  Browse reference pages", "Q  Quit"):
+                    say(line)
         except (ScopeError, OSError, ValueError) as exc:
             d["reference_analysis"] = {"status": "unsupported-or-unresolved", "scope": str(exc)}
             say(str(exc))
 
 
-def interactive(search):
+def export_search(search, term, cached=False, *, advanced=False):
+    progress = Progress()
+    try:
+        destination = destination_for(desktop_directory(), term, advanced=advanced)
+        say("Preparing an exact-size TXT preview of all matching locations...", tone="heading")
+        with preview(search, term, cached=cached, progress=progress, advanced=advanced) as prepared:
+            progress.finish()
+            say(f"Export all results for {term!r}?", tone="heading")
+            say("Export type: " + ("Advanced" if advanced else "Basic"))
+            say(f"Matches: {prepared.count:,}")
+            say("TXT size: " + size(prepared.bytes))
+            say("Save to: " + str(destination))
+            while True:
+                answer = prompt("Confirm export? [Y/N]: ").strip().upper()
+                if answer == "Y":
+                    publish(prepared, destination)
+                    say("Saved: " + str(destination), tone="success")
+                    return
+                if answer in {"N", "Q", "B", ""}:
+                    say("Export cancelled. No Desktop file was created.", tone="notice")
+                    return
+                say("Enter Y to save or N to cancel.", tone="notice")
+    except KeyboardInterrupt:
+        say("Export cancelled. Your search is still open.", tone="notice")
+    except (ScopeError, OSError, ValueError, sqlite3.Error) as exc:
+        say("Export failed: " + str(exc), tone="notice")
+    finally:
+        progress.finish()
+
+
+def interactive(search, cached=False):
     summary = search.summary
-    say(f"Search index: {summary['occurrences']:,} extracted string locations. Observed {summary['observed_at']}.")
+    say(f"Search index: {summary['occurrences']:,} extracted string locations. Observed {summary['observed_at']}.", tone="heading")
     for o in summary["observations"]:
         say(f"  {o['product']}: {o['build']}")
     if summary.get("fixture_data"):
-        say("SYNTHETIC TEST FIXTURE. These are not Roblox discoveries.")
+        say("SYNTHETIC TEST FIXTURE. These are not Roblox discoveries.", tone="notice")
     say("Enter a search term. H gives help. S <term> searches numbers or command words.")
     term, page, rows, total = None, 0, [], 0
     while True:
-        line = prompt("Search: " if term is None else "Result number, new search, N/P, B, H or Q: ")
+        line = prompt("Search: " if term is None else "Result number, new search, N/P, JMP <page>, --export/--advexport, B, H or Q: ")
         command = line.strip().upper()
         explicit = line[:2].upper() == "S "
+        export_after = False
+        if not explicit and command in {"--EXPORT", "--ADVEXPORT"}:
+            if term is None:
+                say("Enter a search term first.", tone="notice")
+            else:
+                export_search(search, term, cached, advanced=command == "--ADVEXPORT")
+            continue
+        if not explicit and re.match(r"^JMP(?:\s|$)", command):
+            if term is None:
+                say("Enter a search term first.", tone="notice")
+                continue
+            last_page = max(1, (total+14)//15)
+            target = command[3:].strip()
+            if not (target.isascii() and target.isdecimal() and len(target) <= 12 and 1 <= int(target) <= last_page):
+                say(f"Use JMP <page>. Valid pages: 1-{last_page}. Your current page is {page+1}.", tone="notice")
+                continue
+            page = int(target)-1
+            # Continue through the normal page rendering below.
+            command = "N"
+            jumped = True
+        else:
+            jumped = False
         if not explicit and command == "Q":
             return
         if not explicit and command == "H":
-            say(HELP)
+            show_help()
             continue
         if not explicit and command == "B":
             term, rows, page = None, [], 0
@@ -166,7 +244,9 @@ def interactive(search):
             if term is None:
                 say("Enter a search term first.")
                 continue
-            if command == "N" and (page+1)*15 < total:
+            if jumped:
+                pass
+            elif command == "N" and (page+1)*15 < total:
                 page += 1
             elif command == "P" and page:
                 page -= 1
@@ -187,16 +267,23 @@ def interactive(search):
                 return
         else:
             new_term = line[2:] if explicit else line
+            if not explicit:
+                match = re.fullmatch(r"(.*\S)[ \t]+(--export|--advexport)[ \t]*", line, flags=re.IGNORECASE)
+                if match:
+                    new_term, export_after = match[1], match[2].lower()
             if not new_term:
                 continue
             term, page = new_term, 0
         say("Searching...")
         total, rows = search.page(term, page)
+        say()
         say(f"{total:,} matching extracted occurrences for {term!r}. Page {page+1}/{max(1, (total+14)//15)}. Duplicate text has separate locations.")
         for i, row in enumerate(rows, page*15+1):
             text = row["text"]
             preview = text if len(text) <= 150 else text[:150]+"..."
             say(f"{i}. {preview} [{row['type']}]")
+        if export_after:
+            export_search(search, term, cached, advanced=export_after == "--advexport")
 
 
 def main(argv=None):
@@ -207,14 +294,14 @@ def main(argv=None):
     parser.add_argument("--status", action="store_true", help="Print retained coverage and measured sizes")
     args = parser.parse_args(argv)
     root = args.store.resolve()
-    say("BloxScope | local public resource search")
+    banner()
     say("Data folder: " + str(root))
     try:
         if not args.cached and not args.status:
             try:
-                prepare(root, say)
+                prepare(root, Progress())
             except (ScopeError, OSError, ValueError) as exc:
-                say("Preparation failed: " + str(exc))
+                say("Preparation failed: " + str(exc), tone="notice")
                 if active(root) is None:
                     say("No completed index is available. Retry after the reported problem is fixed.")
                     return 2
@@ -228,11 +315,11 @@ def main(argv=None):
                 say(json.dumps(search.summary, indent=2, ensure_ascii=True))
                 say("Current data-folder disk bytes: " + size(sum(p.stat().st_size for p in root.rglob("*") if p.is_file())))
             elif args.prepare_only:
-                say("Preparation finished.")
+                say("Preparation finished.", tone="success")
             else:
                 if args.cached:
-                    say("CACHED DATA. Build and observation dates are shown below. No fresh package observation is claimed.")
-                interactive(search)
+                    say("CACHED DATA. Build and observation dates are shown below. No fresh package observation is claimed.", tone="notice")
+                interactive(search, cached=args.cached)
         finally:
             search.close()
         return 0

@@ -220,7 +220,7 @@ class SearchTests(TempCase):
         run = subprocess.run([sys.executable, "-c", code, str(self.root)], input=commands.encode(), capture_output=True, env=env)
         self.assertEqual(run.returncode, 0, run.stderr.decode("ascii", "replace"))
         out = run.stdout.decode("ascii")
-        for text in ("SYNTHETIC TEST FIXTURE", "Page 2/", "Found:", "Original file SHA-256", "for '123'", "Saved:", "case-insensitive literal"):
+        for text in ("SYNTHETIC TEST FIXTURE", "Page 2/", "Found:", "Original file SHA-256", "for '123'", "Saved:", "Search numbers or command words"):
             self.assertIn(text, out)
         self.assertNotIn("Traceback", out)
 

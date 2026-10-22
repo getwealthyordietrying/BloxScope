@@ -10,6 +10,8 @@ import urllib.parse
 import urllib.request
 
 from .common import ScopeError, atomic_json, file_hash, now
+from .terminal import report
+from . import __version__
 
 CDN = "https://setup.rbxcdn.com"
 SETTINGS = "https://clientsettingscdn.roblox.com/v2/client-version/"
@@ -53,7 +55,7 @@ class HTTP:
         path = Path(path)
         for attempt in range(3):
             try:
-                req = urllib.request.Request(url, headers={"User-Agent": "BloxScope/0.1 public resource study",
+                req = urllib.request.Request(url, headers={"User-Agent": f"BloxScope/{__version__} public resource study",
                                                           "Accept-Encoding": "identity"})
                 with self.opener.open(req, timeout=30) as r, path.open("wb") as f:
                     if r.status != 200 or not official(r.url):
@@ -63,16 +65,23 @@ class HTTP:
                     if declared is not None and not 0 <= declared <= limit:
                         raise ScopeError("Download exceeds its size bound")
                     total, tick = 0, time.monotonic()
+                    label = "Downloading " + url.rsplit("/", 1)[-1]
+                    report(progress, label, 0, declared, "bytes")
                     while block := r.read(min(1024**2, limit - total + 1)):
                         total += len(block)
                         if total > limit:
                             raise ScopeError("Download exceeds its size bound")
                         f.write(block)
+                        report(progress, label, total, declared, "bytes")
                         if time.monotonic() - tick > 2:
-                            progress(f"  downloaded {total / 1024**2:.1f} MiB")
+                            if declared is None:
+                                progress(f"  downloaded {total / 1024**2:.1f} MiB; total unknown")
                             tick = time.monotonic()
                     if declared is not None and total != declared:
                         raise ScopeError("Incomplete HTTP body")
+                    report(progress, label, total, declared, "bytes")
+                    if declared is None:
+                        progress(f"Download complete: {total:,} bytes; total was unknown.")
                     return {"requested_url": url, "final_url": r.url, "observed_at": now(),
                             "bytes": total, "http_status": r.status,
                             "etag": r.headers.get("ETag"), "last_modified": r.headers.get("Last-Modified")}
@@ -151,18 +160,27 @@ def package(http, root, build, p, progress):
     path = root / (p["md5"] + ".zip")
     meta_path = path.with_suffix(".json")
     requested = f"{CDN}/{build}-{p['name']}"
+
+    def checked_hash(target, algorithm):
+        total = target.stat().st_size
+        label = f"Verifying {p['name']} ({algorithm})"
+        report(progress, label, 0, total, "bytes")
+        return file_hash(target, algorithm,
+                         on_bytes=lambda done: report(progress, label, done, total, "bytes"))
+
     if path.exists() and meta_path.exists():
         meta = json.loads(meta_path.read_text())
-        if (path.stat().st_size == p["compressed_size"] and file_hash(path, "md5") == p["md5"]
-                and file_hash(path) == meta["sha256"]):
+        if (path.stat().st_size == p["compressed_size"] and checked_hash(path, "md5") == p["md5"]
+                and checked_hash(path, "sha256") == meta["sha256"]):
+            progress("Verified cached package: " + p["name"] + "; no download needed.")
             return path, {**meta, "requested_url": requested, "cache_hit": True,
                           "verified_at": now(), "manifest": p}
         raise ScopeError(f"Cached package is damaged: {path}. Move it aside before retrying.")
     partial = path.with_suffix(".part")
     meta = http.fetch(requested, partial, min(p["compressed_size"], MAX_DOWNLOAD), progress)
-    if partial.stat().st_size != p["compressed_size"] or file_hash(partial, "md5") != p["md5"]:
+    if partial.stat().st_size != p["compressed_size"] or checked_hash(partial, "md5") != p["md5"]:
         raise ScopeError("Package size/MD5 does not match the official manifest: " + p["name"])
-    meta.update(sha256=file_hash(partial), md5=p["md5"], download_url=requested, cache_hit=False,
+    meta.update(sha256=checked_hash(partial, "sha256"), md5=p["md5"], download_url=requested, cache_hit=False,
                 verified_at=now(), manifest=p)
     partial.replace(path)
     atomic_json(meta_path, meta)

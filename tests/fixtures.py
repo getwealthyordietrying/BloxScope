@@ -67,8 +67,8 @@ def named(class_id, name, kind, values):
     return struct.pack("<II", class_id, len(name))+name+bytes([kind])+values
 
 
-def model_fixture(opaque=False):
-    first = table(["SYNTHETIC FIXTURE", "café gift", "GiftFixture", "GiftFixture"])
+def model_fixture(opaque=False, strings=None):
+    first = table(strings if strings is not None else ["SYNTHETIC FIXTURE", "café gift", "GiftFixture", "GiftFixture"])
     second = b"unknown" if opaque else OBSERVED_PLAYER_PREFIX + first
     return (BINARY_RBX+struct.pack("<HII", 0, 2, 3)+b"\0"*8
             + chunk(b"INST", named(7, b"ModuleScript", 0, struct.pack("<I", 2)+b"\0"*8))
@@ -93,7 +93,7 @@ def zip_fixture(files):
 class FakeHTTP:
     origin = "synthetic-test-fixture"
 
-    def __init__(self, revision=1, fail=None):
+    def __init__(self, revision=1, fail=None, model=None):
         self.calls = []
         self.fail = fail
         self.bodies = {}
@@ -101,7 +101,7 @@ class FakeHTTP:
             build = "version-"+f"{revision*2-(1 if product == 'WindowsPlayer' else 0):016x}"
             self.bodies[SETTINGS+product] = json.dumps({"clientVersionUpload": build, "version": "SYNTHETIC"}).encode()
             files = {archive: {executable: pe_fixture()},
-                     "extracontent-models.zip": {"SyntheticFixture.rbxm": model_fixture()},
+                     "extracontent-models.zip": {"SyntheticFixture.rbxm": model_fixture() if model is None else model},
                      "extracontent-scripts.zip": {"Fixture.lua": ("-- SYNTHETIC FIXTURE\n"+"\n".join(f'Gift line {i} café 100%_[]' for i in range(35))+f"\nrevision {revision}\n").encode()}}
             records = ["v0"]
             for name, members in files.items():

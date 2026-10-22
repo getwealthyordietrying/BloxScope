@@ -1,5 +1,7 @@
 # BloxScope
 
+Version 0.2.0 adds basic and advanced TXT exports, `JMP <page>`, cyan headings and measured preparation bars. Existing indexes stay compatible. See [the update checks](reports/REFINEMENT-0.2.0.md).
+
 Search strings in a local selection of public Roblox Windows Player and Studio resources. The app downloads them directly from Roblox. It does not need an account, cookies, an API key, a browser session, or an installed Roblox client. Downloaded code is never run.
 
 Use Python 3.14 or newer. Zstandard is part of its standard library. Core search has no pip dependencies.
@@ -31,11 +33,31 @@ This does not need PowerShell activation. Optional full installation is `py -3.1
 
 Use `S 123` to search a number. A plain number always means a displayed result number. `S Q` searches the letter Q. `S ` also preserves spaces and punctuation in the rest of the term. `H` explains the commands. Ctrl+C stops cleanly. EOF quits.
 
-Search is a **case-insensitive literal substring**, using Unicode case folding. There is no regex, wildcard or SQL search mode. `%`, `_`, brackets and quotes are literal. Numbering continues across pages. Only numbers on the current page open details. Every matching extracted location remains available; there is no relevance cutoff. Counts are matching extracted string records, not unique text or individual repetitions of the term inside one record.
+Use `JMP 32` to jump straight to page 32 of the current search. Any valid page number works. Invalid numbers show the valid range and leave your current page open. `N/P` still move one page at a time.
 
-Details show the exact text, source type, build, original hash, encoding, length and location. Long text has a preview; `T` prints it all. Control characters and characters unsupported by the terminal are escaped. `V` shows raw evidence and URLs. `E` writes JSON and Markdown to the store's `exports` folder. Each export gets a new name.
+## Export every result to TXT
 
-For executable results, `R` checks experimental decoded references and `C` checks candidate pointer bytes. `N`/`P` then page through that evidence. Exports include the reference page currently open, its total count and coverage. Other pages remain accessible. Nearby context is only extraction order in the same file or script. It is not a reference.
+Enter `Gift --export` to export every matching string as a numbered list. After a normal search, enter `--export` to export that current search. The TXT has only numbered full strings, with duplicate locations kept in display order. It has no headings, source labels or other metadata. Control characters are escaped so each result stays on one line.
+
+Use `Gift --advexport` or `--advexport` for the detailed TXT. It includes builds, dates, coverage limits, source types, hashes, script attribution, encoding, lengths and labelled locations. Bulk export does not run reference analysis. Names do not establish behavior or release plans.
+
+Both formats include all pages. The confirmation shows Basic or Advanced, the search term, match count, exact UTF-8 byte size and destination. Enter Y to save or N to cancel. Ctrl+C cancels the export and keeps the search open. Previewing a broad search can take time and temporary disk space. Rows are streamed from one retained index generation.
+
+Files go to your actual Windows Desktop, including OneDrive redirection. Basic and advanced filenames are distinct and include unique suffixes. Nothing is created on the Desktop before confirmation, and existing files are never overwritten. Access errors are shown without silently choosing another folder. A hard process kill can leave a partial staging file; ordinary cancellation cleans up the copy.
+
+`S <text>` always searches literally. Use `S Gift --export`, `S Gift --advexport` or `S JMP 32` to search those characters without performing an action. `S 123` searches numbers. A separate trailing export option on an ordinary search starts confirmation instead.
+
+TXT files contain no terminal color codes. Single-result JSON and Markdown exports remain available through E in details.
+
+## Appearance and progress
+
+The cat art appears once at launch. Headings and art use cyan, success messages use green and notices use yellow. Result text keeps the terminal's normal color.
+
+Progress redraws on one line in an interactive terminal. Known totals show a solid bar, completed amount, total and percentage. Unknown totals show activity without a percentage. Bars fit the terminal width, with Unicode blocks when the output encoding supports them and an ASCII fallback otherwise. Stage messages and prompts finish the active progress line first.
+
+Redirected output uses occasional plain progress lines without animation. Color is disabled for redirected output, unsupported consoles, TERM=dumb, or when NO_COLOR is set, even to an empty value. No extra package is needed.
+
+Download bytes, verification work and archive member counts are measured separately. Archive counts include skipped members as inspected decisions, not decoded scripts. Long script properties keep their inspected-count messages while their member is still incomplete. Cached verification is not presented as a fresh download. Checkpoints and atomic promotion are unchanged.
 
 ## Collection and coverage
 
@@ -106,4 +128,6 @@ Without Capstone, the two backend-specific tests are skipped. The complete relea
 
 The source ZIP includes code, tests, docs, small evidence reports and required notices. It excludes downloaded Roblox resources, databases, caches, exports, virtual environments and verification stores. A clean-folder verification runs the packaged tests and terminal workflow. Read [the feasibility report](reports/FEASIBILITY.md) for measurements and remaining limits.
 
-The container framing, bounded compression and Luau table reader were adapted from BloxRadar. Its MIT notice is preserved in [licenses/BloxRadar-MIT.txt](licenses/BloxRadar-MIT.txt).This project runs independently of BloxRadar.
+The container framing, bounded compression and Luau table reader were adapted from BloxRadar. Its MIT notice is preserved in [licenses/BloxRadar-MIT.txt](licenses/BloxRadar-MIT.txt). This project runs independently of BloxRadar. Required attribution comments and notices remain in the source.
+
+Source packaging omits local research-input path lists and redacts machine-local home paths from report copies. Original hashes, offsets, build observations, source URLs and licensing evidence are preserved. Local historical reports are not rewritten.

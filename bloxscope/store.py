@@ -67,18 +67,33 @@ class Search:
     def close(self):
         self.db.close()
 
-    def page(self, term, page=0, page_size=15):
+    def count(self, term):
         if not term:
-            return 0, []
+            return 0
         folded = term.casefold()
         if getattr(self, "_last_count", (None,))[0] == folded:
             count = self._last_count[1]
         else:
             count = self.db.execute("SELECT count(*) FROM strings WHERE instr(folded,?)>0", (folded,)).fetchone()[0]
             self._last_count = (folded, count)
+        return count
+
+    def export_rows(self, term):
+        cursor = self.db.execute("""SELECT s.*,f.product,f.build,f.path,f.sha256,
+            f.package_json,f.coverage_json,c.metadata_json
+            FROM strings s JOIN files f ON f.id=s.file_id
+            LEFT JOIN scripts c ON c.id=s.script_id
+            WHERE instr(s.folded,?)>0 ORDER BY s.id""", (term.casefold(),))
+        try:
+            yield from cursor
+        finally:
+            cursor.close()
+
+    def page(self, term, page=0, page_size=15):
+        count = self.count(term)
         if not count:
             return 0, []
-        rows = [dict(r) for r in self.db.execute("SELECT id,text,type,encoding FROM strings WHERE instr(folded,?)>0 ORDER BY id LIMIT ? OFFSET ?", (folded, page_size, page*page_size))]
+        rows = [dict(r) for r in self.db.execute("SELECT id,text,type,encoding FROM strings WHERE instr(folded,?)>0 ORDER BY id LIMIT ? OFFSET ?", (term.casefold(), page_size, page*page_size))]
         return count, rows
 
     def detail(self, occurrence):
